@@ -33,7 +33,7 @@ int main() {
     // begin timestamp (note, this is CPU time, not wall time) 
     start_time = clock();
  
-    for (seq_num = 0; seq_num < 50; seq_num++) {
+    for (seq_num = 0; seq_num < 200; seq_num++) {
         sendto(sockfd, payload, payload_len, 0, (struct sockaddr*) &dest_addr, sizeof(dest_addr));
         printf("sent ICMP msg: %d\n", seq_num);
         
