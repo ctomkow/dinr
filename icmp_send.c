@@ -1,5 +1,8 @@
-#include <stdio.h> // printf
+#include <stdio.h> // printf()
+#include <stdlib.h> // malloc()
 #include <arpa/inet.h> // inet_pton (specific to Ubuntu) - also exposes <netinet/in.h>
+#include <netinet/ip_icmp.h> // struct icmphdr
+#include <unistd.h> // sleep()
 
 int main() {
     
@@ -15,15 +18,22 @@ int main() {
     // struct used for sendto dest addr for connectionless messages
     struct sockaddr_in dest_addr;
     dest_addr.sin_family = AF_INET;
-    inet_pton(AF_INET, "192.168.1.150", &dest_addr.sin_addr);
-    
-    payload_len = 64;
-    payload     = malloc(payload_len);
+    inet_pton(AF_INET, "8.8.8.8", &dest_addr.sin_addr);
+
+    // specify payload size and reserve memory    
+    payload_len     = 64;
+    payload         = malloc(payload_len);
+
+    // specify ICMP header
+    struct icmphdr echo_req;
+    echo_req.type   = 8; // icmp echo request
+    echo_req.code   = 0;
     
     while(1) {
-        sendto(sockfd, payload_len, 0, (struct sockaddr*) &dest_addr, sizeof(dest_addr));
-        print("sent ICMP msg: &d\n", seq_num);
+        sendto(sockfd, payload, payload_len, 0, (struct sockaddr*) &dest_addr, sizeof(dest_addr));
+        printf("sent ICMP msg: %d\n", seq_num);
         
-        seq_num++ // increase seq_num by one
+        seq_num++; // increase seq_num by one
+        sleep(1); // for testing (sec)
     }
 }
