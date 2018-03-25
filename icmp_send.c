@@ -29,19 +29,19 @@ unsigned short in_cksum(unsigned short *, int);
 int main() {
     
     int       sockfd; // raw_sock file descriptor
-    char*     icmp_packet; // pointer to memory address for packet data
-    int       icmp_packet_len; // integer defining payload size in bytes
+    char     *icmp_packet; // pointer to memory address for packet data
+    int       icmp_packet_len; // integer defining icmp packet size in bytes
     int       seq_num; // sequence number of sent ICMP echo request
-    struct    icmphdr* echo_req; // pointer to icmphdr in memory
+    struct    icmphdr *echo_req; // pointer to icmphdr in memory
+    struct    sockaddr_in dest_addr; // struct used for sendto des addr for connectionless messages
    
     sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP); // create raw socket
     
-    // struct used for sendto dest addr for connectionless messages
-    struct sockaddr_in dest_addr;
+    // fill in sockaddr_in struct with destination address details
     dest_addr.sin_family = AF_INET;
     inet_pton(AF_INET, "192.168.1.150", &dest_addr.sin_addr);
 
-    // specify payload and packet size and reserve memory    
+    // specify payload and packet size in bytes, reserve memory    
     icmp_packet_len     = 26; // ICMP_HDR + PAYLOAD (8 + 18)
     icmp_packet         = malloc(icmp_packet_len);
 
@@ -50,7 +50,7 @@ int main() {
 
     // reserve and specify ICMP header details
     echo_req = malloc(sizeof(struct icmphdr)); // reserve memory for icmphdr
-    echo_req = (struct icmphdr*) (icmp_packet) ; // icmp_packet cast as icmphdr
+    echo_req = (struct icmphdr *) (icmp_packet) ; // icmp_packet cast as icmphdr
     echo_req->type     = 8; // icmp echo request, type 8 code 0
     echo_req->code     = 0;
     echo_req->checksum = 0;
@@ -60,8 +60,9 @@ int main() {
     // print start time
     print_time();
  
+    // send ICMP echo requests 
     for (seq_num = 0; seq_num < 1000000; seq_num++) {
-        sendto(sockfd, icmp_packet, icmp_packet_len, 0, (struct sockaddr*) &dest_addr, sizeof(dest_addr));
+        sendto(sockfd, icmp_packet, icmp_packet_len, 0, (struct sockaddr *) &dest_addr, sizeof(dest_addr));
     }
 
     // print end time
@@ -76,7 +77,7 @@ void print_time() {
     // Time vars
     char      time_buff[26]; // time buffer
     int       ms; // store milliseconds
-    struct    tm* time_info; // a date and time struct (only sec precision)
+    struct    tm *time_info; // a date and time struct (only sec precision)
     struct    timeval time; // sec and microsec time struct
  
     gettimeofday(&time, NULL); // get time
@@ -97,10 +98,10 @@ void print_time() {
 // checksum func'n src: cs.cmu.edu/afs/cs/academic/class/15213-f00/unpv12e/libfree/in_cksum.c
 unsigned short in_cksum(unsigned short *addr, int len) {
 
-    int            nleft     = len;
-    int            sum       = 0;
-    unsigned short *w        = addr;
-    unsigned short answer    = 0;
+    int             nleft     = len;
+    int             sum       = 0;
+    unsigned short *w         = addr;
+    unsigned short  answer    = 0;
 
     while (nleft > 1) {
         sum   += *w++;
