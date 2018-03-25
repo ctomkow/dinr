@@ -1,11 +1,10 @@
 #include <stdio.h> // printf()
 #include <stdlib.h> // malloc()
 #include <arpa/inet.h> // inet_pton (specific to Ubuntu) - also exposes <netinet/in.h>
-#include <netinet/ip_icmp.h> // struct icmphdr, ICMP_ECHO
+#include <netinet/ip_icmp.h> // icmphdr struct
 #include <unistd.h> // sleep()
-#include <time.h> // time calls
-#include <sys/time.h> // gettimeofday()
-#include <math.h> // lrint rounding ... mhmm something is borked when compliling..
+#include <time.h> // localtime(), strftime()
+#include <sys/time.h> // gettimeofday(), timeval struct
 #include <string.h> // memset()
 
 // declare functions
@@ -61,32 +60,32 @@ void print_time() {
 
     // Time vars
     char      time_buff[26]; // time buffer
-    int       millisec; // store millisec
-    struct    tm* tm_info; 
-    struct    timeval tv; 
+    int       ms; // store milliseconds
+    struct    tm* time_info; // a date and time struct (only sec precision)
+    struct    timeval time; // sec and microsec time struct
  
-    gettimeofday(&tv, NULL); // get time
+    gettimeofday(&time, NULL); // get time
 
-    millisec = tv.tv_usec / 1000.0; // millisec handling
-    if (millisec >= 1000) {
-        millisec -= 1000;
-        tv.tv_sec++; 
+    ms = time.tv_usec / 1000.0; // convert from microseconds to milliseconds
+    if (ms >= 1000) {
+        ms -= 1000;
+        time.tv_sec++;  // if millisecond is >= 1000, incr second
     }
 
-    tm_info = localtime(&tv.tv_sec);
-    strftime(time_buff, 26, "%Y:%m:%d %H:%M:%S", tm_info);
+    time_info = localtime(&time.tv_sec); // assigns time to time_info struct
+    strftime(time_buff, 26, "%Y:%m:%d %H:%M:%S", time_info); // formats time
 
-    printf("%s.%03d\n", time_buff, millisec); // print time
+    printf("%s.%03d\n", time_buff, ms); // prints time
 
 }
 
 // checksum func'n src: cs.cmu.edu/afs/cs/academic/class/15213-f00/unpv12e/libfree/in_cksum.c
 unsigned short in_cksum(unsigned short *addr, int len) {
 
-    int         nleft     = len;
-    int         sum       = 0;
-    unsigned short *w     = addr;
-    unsigned short answer = 0;
+    int            nleft     = len;
+    int            sum       = 0;
+    unsigned short *w        = addr;
+    unsigned short answer    = 0;
 
     while (nleft > 1) {
         sum   += *w++;
