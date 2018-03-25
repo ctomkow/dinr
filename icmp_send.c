@@ -1,3 +1,18 @@
+/*
+
+Craig Tomkow
+March 25, 2018
+COMP689 - Advanced Distributed Systems
+A Distributed ICMP Network Responder (DINR) service
+
+icmp_send.c
+
+-This program sends ICMP echo requests (type 8, code 0) as fast as possible to a target addr.
+ It is used to test the limits of a linux kernel responding to small (64 byte) echo requests.
+
+*/
+
+
 #include <stdio.h> // printf()
 #include <stdlib.h> // malloc()
 #include <arpa/inet.h> // inet_pton (specific to Ubuntu) - also exposes <netinet/in.h>
