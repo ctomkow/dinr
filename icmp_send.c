@@ -31,7 +31,7 @@ int main() {
     int       sockfd; // raw_sock file descriptor
     char     *icmp_packet; // pointer to memory address for packet data
     int       icmp_packet_len; // integer defining icmp packet size in bytes
-    int       seq_num; // sequence number of sent ICMP echo request
+    long int      seq_num; // sequence number of sent ICMP echo request
     struct    icmphdr *echo_req; // pointer to icmphdr in memory
     struct    sockaddr_in dest_addr; // struct used for sendto des addr for connectionless messages
    
@@ -61,14 +61,14 @@ int main() {
     print_time();
  
     // send ICMP echo requests 
-    for (seq_num = 0; seq_num < 1000000; seq_num++) {
+    for (seq_num = 0; seq_num < 100000000; seq_num++) {
         sendto(sockfd, icmp_packet, icmp_packet_len, 0, (struct sockaddr *) &dest_addr, sizeof(dest_addr));
     }
 
     // print end time
     print_time();
 
-    printf("numbr sent: %d\n", seq_num); 
+    printf("numbr sent: %ld\n", seq_num); 
 
 }
 
